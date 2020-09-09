@@ -3,7 +3,8 @@
 //
 
 #pragma once
-
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
 
 class CMPlayerBasicVersionView : public CView
 {
@@ -43,6 +44,9 @@ protected:
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnFileNew();
+	MCIDEVICEID m_DeviceID;
 };
 
 #ifndef _DEBUG  // MPlayer_BasicVersionView.cpp 中的调试版本

@@ -29,6 +29,7 @@ BEGIN_MESSAGE_MAP(CMPlayerBasicVersionView, CView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CMPlayerBasicVersionView::OnFilePrintPreview)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
+	ON_COMMAND(ID_FILE_NEW, &CMPlayerBasicVersionView::OnFileNew)
 END_MESSAGE_MAP()
 
 // CMPlayerBasicVersionView 构造/析构
@@ -36,6 +37,7 @@ END_MESSAGE_MAP()
 CMPlayerBasicVersionView::CMPlayerBasicVersionView() noexcept
 {
 	// TODO: 在此处添加构造代码
+	m_DeviceID = 0;
 
 }
 
@@ -126,3 +128,29 @@ CMPlayerBasicVersionDoc* CMPlayerBasicVersionView::GetDocument() const // 非调
 
 
 // CMPlayerBasicVersionView 消息处理程序
+
+
+void CMPlayerBasicVersionView::OnFileNew()
+{
+	// TODO: 在此添加命令处理程序代码
+	//打开文件管理器，选择歌曲
+	//读取歌曲路径
+	CString	m_PathOfMusicDoc;
+	CFileDialog DocSelectDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, L"MP3音频文件(*.mp3)|*.mp3", NULL);
+	if (DocSelectDlg.DoModal() == IDCANCEL)return;
+	else m_PathOfMusicDoc = DocSelectDlg.GetPathName();
+//	if (DocSelectDlg.DoModal() == IDOK)m_PathOfMusicDoc = DocSelectDlg.GetPathName();
+	//关闭当前播放音乐
+
+	mciSendCommand(m_DeviceID, MCI_CLOSE, 0, 0);
+
+	//播放所选择的音乐
+	MCI_OPEN_PARMS mciOpenMusic;
+	UINT playDeviceID;
+	mciOpenMusic.lpstrDeviceType = L"mp3";
+	mciOpenMusic.lpstrElementName = m_PathOfMusicDoc;
+	mciSendCommand(0, MCI_PLAY, MCI_OPEN_ELEMENT, (DWORD)&mciOpenMusic);
+	playDeviceID = mciOpenMusic.wDeviceID;
+	MCI_PLAY_PARMS mciPLay;
+	mciSendCommand(playDeviceID, MCI_PLAY, MCI_WAIT, (DWORD)&mciPLay);
+}
