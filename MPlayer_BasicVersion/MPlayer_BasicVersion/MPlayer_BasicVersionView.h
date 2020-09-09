@@ -47,6 +47,15 @@ protected:
 public:
 	afx_msg void OnFileNew();
 	MCIDEVICEID m_DeviceID;
+//	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+//	afx_msg void OnClickPlayMusic();
+private:
+	CButton* P_ButtonPlay;			//播放按钮的指针
+	CString* m_PathOfMusicDoc;		//添加歌曲文件时的路径
+//	CString* m_NameOfMusicDoc;		//歌曲文件名
+	CString NameOfFileFolder;
+public:
+	afx_msg void OnAddFileFolder();
 };
 
 #ifndef _DEBUG  // MPlayer_BasicVersionView.cpp 中的调试版本

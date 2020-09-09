@@ -169,7 +169,7 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnMusicNew();
+//	afx_msg void OnMusicNew();
 };
 
 CAboutDlg::CAboutDlg() noexcept : CDialogEx(IDD_ABOUTBOX)
@@ -182,7 +182,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
-	ON_COMMAND(ID_FILE_NEW, &CAboutDlg::OnMusicNew)
+//	ON_COMMAND(ID_FILE_NEW, &CAboutDlg::OnMusicNew)
 END_MESSAGE_MAP()
 
 // 用于运行对话框的应用程序命令
@@ -220,10 +220,3 @@ void CMPlayerBasicVersionApp::SaveCustomState()
 
 
 
-void CAboutDlg::OnMusicNew()
-{
-	// TODO: 在此添加命令处理程序代码
-	CFileDialog dlg(TRUE,NULL,NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,L"MP3音频文件(*.mp3)|*.mp3",NULL);
-	dlg.DoModal();
-
-}

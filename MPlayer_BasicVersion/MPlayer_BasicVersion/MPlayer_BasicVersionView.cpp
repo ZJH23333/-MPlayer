@@ -16,10 +16,24 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
-
+//三个全局变量
+HWND m_hWnd;
+DWORD DeviceId;
+tagMCI_OPEN_PARMSA mciOpenMusic;
 // CMPlayerBasicVersionView
-
+void Load(HWND hWnd, CString strFilepath)
+{
+	m_hWnd = hWnd;
+	mciSendCommand(DeviceId, MCI_CLOSE, 0, 0);	//在加载文件前清空上次播放的音乐
+	mciOpenMusic.lpstrElementName = strFilepath;//将音乐文件路径穿给设备
+	DWORD dwReturn;
+	if (dwReturn = mciSendCommand(NULL, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_WAIT, (DWORD)(LPVOID)(&mciOpenMusic)))
+	{
+		char buffer[256];
+		mciGetErrorString(dwReturn, buffer, 256);
+	}
+	DeviceId = mciOpenMusic.wDeviceID;
+}
 IMPLEMENT_DYNCREATE(CMPlayerBasicVersionView, CView)
 
 BEGIN_MESSAGE_MAP(CMPlayerBasicVersionView, CView)
@@ -30,6 +44,9 @@ BEGIN_MESSAGE_MAP(CMPlayerBasicVersionView, CView)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
 	ON_COMMAND(ID_FILE_NEW, &CMPlayerBasicVersionView::OnFileNew)
+	ON_WM_CREATE()
+//	ON_BN_CLICKED(IDC_PLAY, OnClickPlayMusic)
+ON_COMMAND(ID_32772, &CMPlayerBasicVersionView::OnAddFileFolder)
 END_MESSAGE_MAP()
 
 // CMPlayerBasicVersionView 构造/析构
@@ -38,6 +55,8 @@ CMPlayerBasicVersionView::CMPlayerBasicVersionView() noexcept
 {
 	// TODO: 在此处添加构造代码
 	m_DeviceID = 0;
+	m_PathOfMusicDoc =NULL;
+//	m_NameOfMusicDoc = NULL;
 
 }
 
@@ -135,22 +154,62 @@ void CMPlayerBasicVersionView::OnFileNew()
 	// TODO: 在此添加命令处理程序代码
 	//打开文件管理器，选择歌曲
 	//读取歌曲路径
-	CString	m_PathOfMusicDoc;
-	CFileDialog DocSelectDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, L"MP3音频文件(*.mp3)|*.mp3", NULL);
+	CFileDialog DocSelectDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT|OFN_ALLOWMULTISELECT, "MP3音频文件(*.mp3)|*.mp3", NULL);
+	DocSelectDlg.m_ofn.nMaxFile = 100 * MAX_PATH;     // 100   Files   
+	DocSelectDlg.m_ofn.lpstrFile = new   TCHAR[DocSelectDlg.m_ofn.nMaxFile];
+	ZeroMemory(DocSelectDlg.m_ofn.lpstrFile, sizeof(TCHAR) * DocSelectDlg.m_ofn.nMaxFile);
+	CString buf[1000];
+	int num = 0;
 	if (DocSelectDlg.DoModal() == IDCANCEL)return;
-	else m_PathOfMusicDoc = DocSelectDlg.GetPathName();
-//	if (DocSelectDlg.DoModal() == IDOK)m_PathOfMusicDoc = DocSelectDlg.GetPathName();
-	//关闭当前播放音乐
+	else
+	{
+		POSITION pos = DocSelectDlg.GetStartPosition();
+		while (pos != NULL)
+		{
+			buf[num] = DocSelectDlg.GetNextPathName(pos);
+			num++;
+		}
+		int i = 0;
+		m_PathOfMusicDoc = new CString[num];
+		for (; i < num; i++)
+		{
+			m_PathOfMusicDoc[i] = buf[i];			//采集所有已添加歌曲的路径信息
+		}
+	}
+	//	if (DocSelectDlg.DoModal() == IDOK)m_PathOfMusicDoc = DocSelectDlg.GetPathName();
+	
 
-	mciSendCommand(m_DeviceID, MCI_CLOSE, 0, 0);
+	
 
-	//播放所选择的音乐
-	MCI_OPEN_PARMS mciOpenMusic;
-	UINT playDeviceID;
-	mciOpenMusic.lpstrDeviceType = L"mp3";
-	mciOpenMusic.lpstrElementName = m_PathOfMusicDoc;
-	mciSendCommand(0, MCI_PLAY, MCI_OPEN_ELEMENT, (DWORD)&mciOpenMusic);
-	playDeviceID = mciOpenMusic.wDeviceID;
-	MCI_PLAY_PARMS mciPLay;
-	mciSendCommand(playDeviceID, MCI_PLAY, MCI_WAIT, (DWORD)&mciPLay);
+}
+
+
+void CMPlayerBasicVersionView::OnAddFileFolder()
+{
+	// TODO: 在此添加命令处理程序代码
+	char szPath[MAX_PATH];     //存放选择的目录路径 
+
+	ZeroMemory(szPath, sizeof(szPath));
+
+	BROWSEINFO bi;
+	bi.hwndOwner = m_hWnd;
+	bi.pidlRoot = NULL;
+	bi.pszDisplayName = szPath;
+	bi.lpszTitle = "请选择需要打包的目录：";
+	bi.ulFlags = 0;
+	bi.lpfn = NULL;
+	bi.lParam = 0;
+	bi.iImage = 0;
+	//弹出选择目录对话框
+	LPITEMIDLIST lp = SHBrowseForFolder(&bi);
+
+	if (lp && SHGetPathFromIDList(lp, szPath))
+	{
+		NameOfFileFolder.Format("选择的目录为 %s", szPath);
+//		AfxMessageBox(str);
+
+
+	}
+	else
+		AfxMessageBox("无效的目录，请重新选择");
 }
