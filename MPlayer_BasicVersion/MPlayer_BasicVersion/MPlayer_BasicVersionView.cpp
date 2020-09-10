@@ -47,6 +47,7 @@ BEGIN_MESSAGE_MAP(CMPlayerBasicVersionView, CView)
 	ON_WM_CREATE()
 //	ON_BN_CLICKED(IDC_PLAY, OnClickPlayMusic)
 ON_COMMAND(ID_32772, &CMPlayerBasicVersionView::OnAddFileFolder)
+ON_WM_CREATE()
 END_MESSAGE_MAP()
 
 // CMPlayerBasicVersionView 构造/析构
@@ -213,3 +214,64 @@ void CMPlayerBasicVersionView::OnAddFileFolder()
 	else
 		AfxMessageBox("无效的目录，请重新选择");
 }
+
+
+int CMPlayerBasicVersionView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CView::OnCreate(lpCreateStruct) == -1)
+		return -1;
+	P_ButtonPause = new CButton();
+	P_ButtonPlay = new CButton();
+	P_ButtonStop = new CButton();
+	P_ButtonPlay->Create("播放",                       //按钮标题
+		WS_CHILD | WS_VISIBLE | WS_BORDER,//按钮风格
+		CRect(10,20,50,35),            //按钮大小
+		this,                          //按钮父指针
+		ID_VIEW_APPLOOK_ONplay);                      //该按钮对应的ID号
+	P_ButtonPlay->ShowWindow(SW_SHOWNORMAL);
+
+	P_ButtonPause->Create("暂停",                       //按钮标题
+		WS_CHILD | WS_VISIBLE | WS_BORDER,//按钮风格
+		CRect(55,20,95,35),            //按钮大小
+		this,                          //按钮父指针
+		ID_VIEW_APPLOOK_ONpause);                      //该按钮对应的ID号
+	P_ButtonPause->ShowWindow(SW_SHOWNORMAL);
+
+	P_ButtonStop->Create("停止",                       //按钮标题
+		WS_CHILD | WS_VISIBLE | WS_BORDER,//按钮风格
+		CRect(100,20,140,35),            //按钮大小
+		this,                          //按钮父指针
+		ID_VIEW_APPLOOK_ONstop);                      //该按钮对应的ID号
+	P_ButtonStop->ShowWindow(SW_SHOWNORMAL);
+	
+	// TODO:  在此添加您专用的创建代码
+
+	return 0;
+}
+
+BEGIN_MESSAGE_MAP(...)
+
+
+	ID_VIEW_APPLOOK_ONplay(IDB_BTN, OnClickButtonplay)   
+	ID_VIEW_APPLOOK_ONpause(IDB_BTN, OnClickButtonpause)
+	ID_VIEW_APPLOOK_ONstop(IDB_BTN, OnClickButtonstop) //按钮消息的处理函数
+
+	END_MSG_MAP
+
+/*int CMPlayerBasicVersionView::nbutton(int nID, CRect rect, int nStyle)
+{
+	 CString m_Caption;
+
+	 m_Caption.LoadString(nID); //取按钮标题  
+
+	 CButton * p_Button = new CButton();
+
+	 ASSERT_VALID(p_Button);
+
+	p_Button->Create(m_Caption, WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | nStyle, rect, this, nID);  //创建按钮  
+
+	return p_Button;
+
+}*/
+
+

@@ -86,7 +86,9 @@
 #define IDS_EDIT_MENU                   306
 #define ID_32771                        32771
 #define ID_32772                        32772
-
+#define ID_VIEW_APPLOOK_ONplay          307
+#define ID_VIEW_APPLOOK_ONpause         308
+#define ID_VIEW_APPLOOK_ONstop          309
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

@@ -43,6 +43,9 @@ protected:
 	afx_msg void OnFilePrintPreview();
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+	afx_msg void OnClickButtonplay();
+	afx_msg void OnClickButtonpause();
+	afx_msg void OnClickButtonstop();
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnFileNew();
@@ -50,12 +53,18 @@ public:
 //	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 //	afx_msg void OnClickPlayMusic();
 private:
-	CButton* P_ButtonPlay;			//播放按钮的指针
-	CString* m_PathOfMusicDoc;		//添加歌曲文件时的路径
+	CButton *P_ButtonPlay;			//播放按钮的指针
+	CButton *P_ButtonPause;         //暂停按钮的指针
+	CButton *P_ButtonStop;          //停止按钮的指针
+	CString *m_PathOfMusicDoc;		//添加歌曲文件时的路径
 //	CString* m_NameOfMusicDoc;		//歌曲文件名
 	CString NameOfFileFolder;
 public:
 	afx_msg void OnAddFileFolder();
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg int nbutton(int nID, CRect rect, int nStyle);
+	
+
 };
 
 #ifndef _DEBUG  // MPlayer_BasicVersionView.cpp 中的调试版本
