@@ -62,7 +62,7 @@ private:
 public:
 	afx_msg void OnAddFileFolder();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg int nbutton(int nID, CRect rect, int nStyle);
+	
 	
 
 };

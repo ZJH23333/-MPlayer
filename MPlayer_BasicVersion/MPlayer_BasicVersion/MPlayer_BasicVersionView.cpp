@@ -45,6 +45,9 @@ BEGIN_MESSAGE_MAP(CMPlayerBasicVersionView, CView)
 	ON_WM_RBUTTONUP()
 	ON_COMMAND(ID_FILE_NEW, &CMPlayerBasicVersionView::OnFileNew)
 	ON_WM_CREATE()
+	ON_BN_CLICKED(ID_VIEW_APPLOOK_ONplay, &CMPlayerBasicVersionView::OnClickButtonplay)
+	ON_BN_CLICKED(ID_VIEW_APPLOOK_ONpause, &CMPlayerBasicVersionView::OnClickButtonpause)
+	ON_BN_CLICKED(ID_VIEW_APPLOOK_ONstop, &CMPlayerBasicVersionView::OnClickButtonstop) //按钮消息的处理函数
 //	ON_BN_CLICKED(IDC_PLAY, OnClickPlayMusic)
 ON_COMMAND(ID_32772, &CMPlayerBasicVersionView::OnAddFileFolder)
 ON_WM_CREATE()
@@ -123,6 +126,44 @@ void CMPlayerBasicVersionView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 #ifndef SHARED_HANDLERS
 	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y, this, TRUE);
 #endif
+}
+
+void CMPlayerBasicVersionView::OnClickButtonplay()
+{
+	MCI_PLAY_PARMS mplay;
+	mplay.dwCallback = (DWORD)m_PathOfMusicDoc;
+	mplay.dwFrom = 0;
+	mciSendCommand(DeviceID, MCI_SET_AUDIO, MCI_FROM | MCI_NOTIFY, (DWORD)(LPVOID)&mplay);//需加入DeviceID
+
+
+	SetDlgItemText(ID_VIEW_APPLOOK_ONpause, "暂停");
+}
+
+void CMPlayerBasicVersionView::OnClickButtonpause()
+{
+	mciSendCommand(DeviceID, MCI_PAUSE, 0, 0);//需加入DeviceID
+	CString strtemp;
+	GetDlgItemText(ID_VIEW_APPLOOK_ONpause, strtemp);//获取按钮状态  
+	if (strtemp.Compare("暂停") == 0)
+	{
+		
+		SetDlgItemText(ID_VIEW_APPLOOK_ONpause, "恢复");
+	}
+	if (strtemp.Compare("恢复") == 0)
+	{
+		mciSendCommand(DeviceID, MCI_RESUME, 0, 0);//需加入DeviceID
+		SetDlgItemText(ID_VIEW_APPLOOK_ONpause, "暂停");
+	}
+
+}
+
+void CMPlayerBasicVersionView::OnClickButtonstop()
+{
+	mciSendCommand(DeviceID, MCI_STOP, 0, 0);//需加入DeviceID
+	mciSendCommand(DeviceID, MCI_CLOSE, 0, 0);//需加入DeviceID
+	SetDlgItemText(ID_VIEW_APPLOOK_ONpause, "暂停");
+	GetDlgItem(ID_VIEW_APPLOOK_ONplay)->EnableWindow(false);//当stop按钮按下时,播放和暂停应该均不可用  
+	GetDlgItem(ID_VIEW_APPLOOK_ONpause)->EnableWindow(false);
 }
 
 
@@ -225,38 +266,31 @@ int CMPlayerBasicVersionView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	P_ButtonStop = new CButton();
 	P_ButtonPlay->Create("播放",                       //按钮标题
 		WS_CHILD | WS_VISIBLE | WS_BORDER,//按钮风格
-		CRect(10,20,50,35),            //按钮大小
+		CRect(10, 20, 50, 35),            //按钮大小
 		this,                          //按钮父指针
 		ID_VIEW_APPLOOK_ONplay);                      //该按钮对应的ID号
 	P_ButtonPlay->ShowWindow(SW_SHOWNORMAL);
 
 	P_ButtonPause->Create("暂停",                       //按钮标题
 		WS_CHILD | WS_VISIBLE | WS_BORDER,//按钮风格
-		CRect(55,20,95,35),            //按钮大小
+		CRect(55, 20, 95, 35),            //按钮大小
 		this,                          //按钮父指针
 		ID_VIEW_APPLOOK_ONpause);                      //该按钮对应的ID号
 	P_ButtonPause->ShowWindow(SW_SHOWNORMAL);
 
 	P_ButtonStop->Create("停止",                       //按钮标题
 		WS_CHILD | WS_VISIBLE | WS_BORDER,//按钮风格
-		CRect(100,20,140,35),            //按钮大小
+		CRect(100, 20, 140, 35),            //按钮大小
 		this,                          //按钮父指针
 		ID_VIEW_APPLOOK_ONstop);                      //该按钮对应的ID号
 	P_ButtonStop->ShowWindow(SW_SHOWNORMAL);
-	
+
 	// TODO:  在此添加您专用的创建代码
 
 	return 0;
 }
 
-BEGIN_MESSAGE_MAP(...)
 
-
-	ID_VIEW_APPLOOK_ONplay(IDB_BTN, OnClickButtonplay)   
-	ID_VIEW_APPLOOK_ONpause(IDB_BTN, OnClickButtonpause)
-	ID_VIEW_APPLOOK_ONstop(IDB_BTN, OnClickButtonstop) //按钮消息的处理函数
-
-	END_MSG_MAP
 
 /*int CMPlayerBasicVersionView::nbutton(int nID, CRect rect, int nStyle)
 {
